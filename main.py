@@ -80,7 +80,7 @@ def receiveJSON(socket, timeout = 1):#source:  Qlurkin/PI2CChampionshipRunner (r
 				break
 	return data
 
-def asyncRecieve(): #main function listens from connection and replies accordingly
+def run(): #main function listens from connection and replies accordingly
     global s
     global turn
     s.listen()
@@ -246,5 +246,5 @@ def createMoveArborescence(state,cycles,isOponent=False):                #attemp
 
 s=connectToServ()            #connect
 inscription()                #register
-asyncRecieve()               #run
+run()               #run
 

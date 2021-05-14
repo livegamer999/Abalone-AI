@@ -99,13 +99,13 @@ def asyncRecieve():
     while True:
         client, adress = s.accept()
         data=receiveJSON(client)
-        print(data)
+        #print(data)
         if data['request']=='ping':
             sendJSON(client,{"response":"pong"})
         if data['request']=='play':
             turn+=1
             possibleMoves=findallmoves(data['state'])
-            chosenMove=possibleMoves[random.randint(0,len(possibleMoves)-1)]
+            chosenMove=getbestMove(possibleMoves,data['state'])
             sendJSON(client,{
                 "response":"move",
                 "move" : {
@@ -149,6 +149,8 @@ def isValidMove(move,state,isOponent=False):
     for marble in marbles:
         if getColor(marble,state)!=getPlayerColor(state,isOponent=isOponent):
             return False
+    if len(marbles)>3:
+        return False
     pos=marbles[0]
     while getColor(pos,state)==getPlayerColor(state,isOponent=isOponent) and pos in marbles:
         pos=sumTuple(pos,moves[direction])
@@ -191,22 +193,63 @@ def simulateMove(move,state,isOponent=False):
         pos=marbles[0]
         while getColor(pos,state)==getPlayerColor(state,isOponent=isOponent) and pos in marbles:
             pos=sumTuple(pos,moves[direction])
-        print(move)
+        #print(move)
         while getColor(pos,state)!="X"and getColor(pos,state)!="E":
             x,y=pos
             newX,newY=sumTuple(pos,moves[direction])
-            if newX in range(len(state["board"])) and newY in range(len(state["board"][x])):
+            if newX in range(len(state["board"])) and newY in range(len(state["board"][x])) and state["board"][newX][newY]!="X":
                 newState["board"][newX][newY]=state["board"][x][y]
             pos=sumTuple(pos,moves[direction])
             #print(pos)
         for marble in marbles:
             x,y=marble
-            newX,newY=sumTuple(marble,moves[direction])
             newState["board"][x][y]="E"
+        for marble in marbles:
+            newX,newY=sumTuple(marble,moves[direction])
             newState["board"][newX][newY]=state["board"][x][y]
-            print(state["board"][x][y])
+            #print(state["board"][x][y])
         return newState
 
+def calculateScore(state):
+    player=getPlayerColor(state)
+    opponent=getPlayerColor(state,isOponent=True)
+    score=0
+    for line in range(len(state["board"])):
+        for pos in state["board"][line]:
+            if pos==player:
+                score+=1
+            elif pos==opponent:
+                score-=1
+    return score
+
+def getbestMove(possibleMoves,state):
+    print(possibleMoves)
+    bestMoves=[possibleMoves[0]]
+    bestscore=calculateScore(simulateMove(possibleMoves[0],state))
+    for move in possibleMoves:
+        score=calculateScore(simulateMove(move,state))
+        #print(score)
+        if score>bestscore:
+            bestMoves=[move]
+            bestscore=score
+        elif score==bestscore:
+            bestMoves.append(move)
+    bestMove=bestMoves[random.randint(0,len(bestMoves)-1)]
+    print("move ",bestMove,"score ",bestscore, "state ",simulateMove(bestMove,state))
+    return bestMove
+
+def createMoveArborescence(state,cycles,isOponent=False):
+    arborescence=[]
+    possibleMoves=findallmoves(state)
+    for move in possibleMoves:
+        newState=simulateMove(move,state,isOponent=isOponent)
+        arborescence={
+            "move":move,
+            "state":deepcopy(newState),
+            "score":calculateScore(newState),
+            "nextMoves":createMoveArborescence(newState,cycles-1,isOponent=not isOponent)
+        }
+    return arborescence
 
 
 

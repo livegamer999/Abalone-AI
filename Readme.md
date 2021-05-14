@@ -10,7 +10,7 @@ time : timeout des requetes
 random : generation d'aleatoire pour le choix du mouvement
 fonction deepcopy de la librairie copy : permet de copier un tuple
 
-fonctions recieveJSON() et sendJSON() pour directement envoyer et recevoir du JSON au/du serveur
+fonctions recieveJSON() et sendJSON() (source: code serveur abalone) pour directement envoyer et recevoir du JSON au/du serveur
 
 fonctionnement de l'IA
 

@@ -1,3 +1,7 @@
+Lancement.
+
+lancer apres le lancement du serveur de jeu. le program se charge du reste
+
 Librairies utilisées:
 
 socket : necessaire a la communication client- serveur

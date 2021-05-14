@@ -15,7 +15,9 @@ fonctions recieveJSON() et sendJSON() pour directement envoyer et recevoir du JS
 fonctionnement de l'IA
 
 -calcule tous les coups valides
+
 -calcule le "score" que l'on obtient pour chaque coup. (score +1 pour chaque piece du joueur -1 pour chacune de celles de l'opposant.)  
+
 -prends le coup avec le meilleur score (si il y en a plusieurs selectionne au hazard dans les meilleurs)
 
 dans les faits est aleatoire sauf quand un coup d'elimination est possible. dans ce cas il jouera ce coup. le code qui permet de prevoir des coups a l'avance est actuellement trop lent
